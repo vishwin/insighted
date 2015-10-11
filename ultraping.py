@@ -2,14 +2,18 @@ import time
 import RPi.GPIO as GPIO
 import csv
 import boto3
-from boto3.sessions import Session
+from boto3.session import Session
 
 GPIO.setmode(GPIO.BOARD)
-
 switchPin=7
 GPIO.setup(switchPin, GPIO.IN)
 pingPin=11
 timeout=0.020
+
+with open("credentials.csv", newline='') as file:
+	cred=list(csv.DictReader(file))
+	session=Session(aws_access_key_id=cred[0]['Access Key Id'], aws_secret_access_key=cred[0]['Secret Access Key'], region_name='us-east-1')
+dynamodb=session.resource('dynamodb')
 
 def idle():
 	while GPIO.input(switchPin)==1:
